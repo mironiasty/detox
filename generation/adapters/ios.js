@@ -6,6 +6,7 @@ const {
 	isBoolean,
 	isPoint,
 	isOneOf,
+	isGreyAction,
 	isGreyMatcher,
 	isArray
 } = require("../core/type-checks");
@@ -24,6 +25,7 @@ const typeCheckInterfaces = {
 	GREYDirection: isOneOf(["left", "right", "up", "down"]),
 	GREYContentEdge: isOneOf(["left", "right", "top", "bottom"]),
 	GREYPinchDirection: isOneOf(["outward", "inward"]),
+	"id<GREYAction>": isGreyAction,
 	"id<GREYMatcher>": isGreyMatcher,
 	UIAccessibilityTraits: isArray
 };
@@ -59,6 +61,7 @@ module.exports = generator({
 		"NSString *",
 		"NSString",
 		"NSUInteger",
+		"id<GREYAction>",
 		"id<GREYMatcher>",
 		"UIAccessibilityTraits"
 	],

@@ -6,7 +6,9 @@ const iosFiles = {
 	"../detox/ios/Detox/GREYMatchers+Detox.h":
 		"../detox/src/ios/earlgreyapi/GREYMatchers+Detox.js",
 	"../detox/ios/EarlGrey/EarlGrey/Matcher/GREYMatchers.h":
-		"../detox/src/ios/earlgreyapi/GREYMatchers.js"
+		"../detox/src/ios/earlgreyapi/GREYMatchers.js",
+	"../detox/ios/EarlGrey/EarlGrey/Core/GREYInteraction.h":
+		"../detox/src/ios/earlgreyapi/GREYInteraction.js"
 };
 
 generateIOSAdapters(iosFiles);

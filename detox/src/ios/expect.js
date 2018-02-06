@@ -12,6 +12,7 @@ const NotExistsMatcher = matchers.NotExistsMatcher;
 const TextMatcher = matchers.TextMatcher;
 const ValueMatcher = matchers.ValueMatcher;
 const GreyActions = require('./earlgreyapi/GREYActions');
+const GreyInteraction = require('./earlgreyapi/GREYInteraction');
 
 let invocationManager;
 
@@ -166,7 +167,8 @@ class ActionInteraction extends Interaction {
     super();
     //if (!(element instanceof Element)) throw new Error(`ActionInteraction ctor 1st argument must be a valid Element, got ${typeof element}`);
     //if (!(action instanceof Action)) throw new Error(`ActionInteraction ctor 2nd argument must be a valid Action, got ${typeof action}`);
-    this._call = invoke.call(element._call, 'performAction:', action._call);
+    this._call = invoke.callDirectly(GreyInteraction.performAction(element._call, action._call));
+    
     // TODO: move this.execute() here from the caller
   }
 }
@@ -176,7 +178,8 @@ class MatcherAssertionInteraction extends Interaction {
     super();
     //if (!(element instanceof Element)) throw new Error(`MatcherAssertionInteraction ctor 1st argument must be a valid Element, got ${typeof element}`);
     //if (!(matcher instanceof Matcher)) throw new Error(`MatcherAssertionInteraction ctor 2nd argument must be a valid Matcher, got ${typeof matcher}`);
-    this._call = invoke.call(element._call, 'assertWithMatcher:', matcher._call);
+    this._call = invoke.callDirectly(GreyInteraction.assertWithMatcher(element._call,matcher._call));
+
     // TODO: move this.execute() here from the caller
   }
 }
