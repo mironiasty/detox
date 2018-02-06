@@ -13,7 +13,8 @@ module.exports = function({
 	supportedTypes,
 	classValue,
 	contentSanitizersForFunction,
-	contentSanitizersForType
+	contentSanitizersForType,
+	blacklistedFunctionNames = []
 }) {
 	/**
 	 * the input provided by objective-c-parser looks like this:
@@ -51,9 +52,16 @@ module.exports = function({
 			t.classBody(
 				json.methods
 					.filter(filterMethodsWithUnsupportedParams)
+					.filter(filterMethodsWithBlacklistedName)
 					.map(createMethod.bind(null, json))
 			),
 			[]
+		);
+	}
+
+	function filterMethodsWithBlacklistedName({ name }) {
+		return !blacklistedFunctionNames.find(
+			blacklisted => name.indexOf(blacklisted) !== -1
 		);
 	}
 

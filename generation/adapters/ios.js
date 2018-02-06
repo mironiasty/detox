@@ -8,6 +8,7 @@ const {
 	isOneOf,
 	isGreyAction,
 	isGreyMatcher,
+	isGreyElementInteraction,
 	isArray
 } = require("../core/type-checks");
 const { callGlobal } = require("../helpers");
@@ -27,6 +28,7 @@ const typeCheckInterfaces = {
 	GREYPinchDirection: isOneOf(["outward", "inward"]),
 	"id<GREYAction>": isGreyAction,
 	"id<GREYMatcher>": isGreyMatcher,
+	"GREYElementInteraction*": isGreyElementInteraction,
 	UIAccessibilityTraits: isArray
 };
 
@@ -57,17 +59,21 @@ module.exports = generator({
 		"CGPoint",
 		"GREYContentEdge",
 		"GREYDirection",
+		"GREYElementInteraction*",
 		"NSInteger",
 		"NSString *",
 		"NSString",
 		"NSUInteger",
 		"id<GREYAction>",
 		"id<GREYMatcher>",
+		"CFTimeInterval",
 		"UIAccessibilityTraits"
 	],
 	renameTypesMap: {
 		NSUInteger: "NSInteger",
-		"NSString *": "NSString"
+		"NSString *": "NSString",
+		CFTimeInterval: "CGFloat"
 	},
-	classValue: ({ name }) => name
+	classValue: ({ name }) => name,
+	blacklistedFunctionNames: ["init"]
 });

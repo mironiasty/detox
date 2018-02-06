@@ -38,6 +38,20 @@ const isGreyAction = ({ name }) =>
     ARG.value.target.value !== "GREYActions"
   ) {
     throw new Error('${name} should be a GREYAction, but got ' + JSON.stringify(ARG));
+    }
+`)({
+		ARG: t.identifier(name)
+	});
+const isGreyElementInteraction = ({ name }) =>
+	template(`
+  if (
+    typeof ARG !== "object" || 
+    ARG.type !== "Invocation" ||
+    typeof ARG.value !== "object" || 
+    typeof ARG.value.target !== "object"
+  ) {
+		// TODO: should specify allowed target values
+    throw new Error('${name} should be a GREYElementInteraction, but got ' + JSON.stringify(ARG));
   }
 `)({
 		ARG: t.identifier(name)
@@ -62,5 +76,6 @@ module.exports = {
 	isOneOf,
 	isGreyAction,
 	isGreyMatcher,
+	isGreyElementInteraction,
 	isArray
 };

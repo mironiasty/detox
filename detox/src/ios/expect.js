@@ -13,34 +13,14 @@ const TextMatcher = matchers.TextMatcher;
 const ValueMatcher = matchers.ValueMatcher;
 const GreyActions = require('./earlgreyapi/GREYActions');
 const GreyInteraction = require('./earlgreyapi/GREYInteraction');
+const GreyCondition = require('./earlgreyapi/GREYCondition');
+const GreyConditionDetox = require('./earlgreyapi/GREYConditionDetox');
 
 let invocationManager;
 
 function setInvocationManager(im) {
   invocationManager = im;
 }
-
-//// examples
-
-/*
-
-element(by.label('Click Me')).tap();
-[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Click Me")] performAction:grey_tap()];
-const _getMatcher1 = detox.invoke.call(detox.invoke.IOS.Class('GREYMatchers'), 'matcherForAccessibilityLabel:', 'Click Me');
-const _getElement1 = detox.invoke.call(detox.invoke.EarlGrey.instance, 'selectElementWithMatcher:', _getMatcher1);
-const _getAction1 = detox.invoke.call(detox.invoke.IOS.Class('GREYActions'), 'actionForTap');
-const _getInteraction1 = detox.invoke.call(_getElement1, 'performAction:', _getAction1);
-detox.invoke.execute(_getInteraction1);
-
-expect(element(by.label('Yay'))).toBeVisible();
-[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Yay")] assertWithMatcher:grey_sufficientlyVisible()];
-const _getMatcher2 = detox.invoke.call(detox.invoke.IOS.Class('GREYMatchers'), 'matcherForAccessibilityLabel:', 'Yay');
-const _getElement2 = detox.invoke.call(detox.invoke.EarlGrey.instance, 'selectElementWithMatcher:', _getMatcher2);
-const _getAssertMatcher2 = detox.invoke.call(detox.invoke.IOS.Class('GREYMatchers'), 'matcherForSufficientlyVisible');
-const _getInteraction2 = detox.invoke.call(_getElement2, 'assertWithMatcher:', _getAssertMatcher2);
-detox.invoke.execute(_getInteraction2);
-
-*/
 
 class Action {}
 
@@ -201,11 +181,14 @@ class WaitForInteraction extends Interaction {
   async withTimeout(timeout) {
     if (typeof timeout !== 'number') throw new Error(`WaitForInteraction withTimeout argument must be a number, got ${typeof timeout}`);
     if (timeout < 0) throw new Error('timeout must be larger than 0');
-    let _conditionCall = invoke.call(invoke.IOS.Class('GREYCondition'), 'detoxConditionForElementMatched:', this._element._call);
+
+    
+
+    let _conditionCall = invoke.callDirectly(GreyConditionDetox.detoxConditionForElementMatched(this._element._call))
     if (this._notCondition) {
-      _conditionCall = invoke.call(invoke.IOS.Class('GREYCondition'), 'detoxConditionForNotElementMatched:', this._element._call);
+      _conditionCall = invoke.callDirectly(GreyConditionDetox.detoxConditionForNotElementMatched(this._element._call))
     }
-    this._call = invoke.call(_conditionCall, 'waitWithTimeout:', invoke.IOS.CGFloat(timeout/1000));
+    this._call = invoke.callDirectly(GreyCondition.waitWithTimeout(_conditionCall, timeout / 1000))
     await this.execute();
   }
   whileElement(searchMatcher) {
@@ -225,8 +208,9 @@ class WaitForActionInteraction extends Interaction {
   }
   async _execute(searchAction) {
     //if (!searchAction instanceof Action) throw new Error(`WaitForActionInteraction _execute argument must be a valid Action, got ${typeof searchAction}`);
-    const _interactionCall = invoke.call(this._element._call, 'usingSearchAction:onElementWithMatcher:', searchAction._call, this._searchMatcher._call);
-    this._call = invoke.call(_interactionCall, 'assertWithMatcher:', this._originalMatcher._call);
+    
+    const _interactionCall = invoke.callDirectly(GreyInteraction.usingSearchActionOnElementWithMatcher(this._element, searchAction._call, this._searchMatcher._call))
+    this._call = invoke.callDirectly(GreyInteraction.assertWithMatcher(_interactionCall, this._originalMatcher._call));
     await this.execute();
   }
   async scroll(amount, direction = 'down') {
@@ -248,7 +232,7 @@ class Element {
   atIndex(index) {
     if (typeof index !== 'number') throw new Error(`Element atIndex argument must be a number, got ${typeof index}`);
     const _originalCall = this._call;
-    this._call = invoke.call(_originalCall, 'atIndex:', invoke.IOS.NSInteger(index));
+    this._call = invoke.callDirectly(GreyInteraction.atIndex(_originalCall, index));
     return this;
   }
   async tap() {
