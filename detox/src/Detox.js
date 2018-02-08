@@ -44,9 +44,10 @@ class Detox {
     const sessionConfig = await this._getSessionConfig();
     const defaultParams = {launchApp: true, initGlobals: true};
     const params = Object.assign(defaultParams, userParams || {});
+    const port = new DetoxServer(new URL(sessionConfig.server).port);
 
     if (!this.userSession) {
-      this.server = new DetoxServer(new URL(sessionConfig.server).port);
+      this.server = new DetoxServer(port);
     }
 
     this.client = new Client(sessionConfig);
@@ -58,33 +59,33 @@ class Detox {
       throw new Error(`'${this.deviceConfig.type}' is not supported`);
     }
 
-    const deviceDriver = new deviceClass(this.client);
-    this.device = new Device(this.deviceConfig, sessionConfig, deviceDriver);
-    await this.device.prepare(params);
+		const deviceDriver = new deviceClass(this.client, port);
+		this.device = new Device(this.deviceConfig, sessionConfig, deviceDriver);
+		await this.device.prepare(params);
 
-    if (params.initGlobals) {
-      deviceDriver.exportGlobals();
-      global.device = this.device;
-    }
-  }
+		if (params.initGlobals) {
+			deviceDriver.exportGlobals();
+			global.device = this.device;
+		}
+	}
 
-  async cleanup() {
-    if (this.client) {
-      await this.client.cleanup();
-    }
+	async cleanup() {
+		if (this.client) {
+			await this.client.cleanup();
+		}
 
-    if (this.device) {
-      await this.device._cleanup();
-    }
+		if (this.device) {
+			await this.device._cleanup();
+		}
 
-    if (this.server) {
-      this.server.close();
-    }
+		if (this.server) {
+			this.server.close();
+		}
 
-    if (argparse.getArgValue('cleanup') && this.device) {
-      await this.device.shutdown();
-    }
-  }
+		if (argparse.getArgValue('cleanup') && this.device) {
+			await this.device.shutdown();
+		}
+	}
 
   async beforeEach(...testNameComponents) {
     this._currentTestNumber++;

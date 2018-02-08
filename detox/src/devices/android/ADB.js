@@ -93,6 +93,10 @@ class ADB {
     return Number(lvl);
   }
 
+  async reverse(deviceId, port) {
+		await this.adbCmd(deviceId, `reverse tcp:${port} tcp:${port}`);
+  }
+  
   async adbCmd(deviceId, params) {
     const serial = `${deviceId ? `-s ${deviceId}` : ''}`;
     const cmd = `${this.adbBin} ${serial} ${params}`;

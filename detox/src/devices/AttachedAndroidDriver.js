@@ -3,8 +3,8 @@ const AndroidDriver = require('./AndroidDriver');
 
 class AttachedAndroidDriver extends AndroidDriver {
 
-  constructor(client) {
-    super(client);
+  constructor(client, port) {
+    super(client, port);
 
     this.emulator = new Emulator();
   }

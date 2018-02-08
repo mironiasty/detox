@@ -12,7 +12,7 @@ const DeviceDriverBase = require('./DeviceDriverBase');
 const EspressoDetox = 'com.wix.detox.espresso.EspressoDetox';
 
 class AndroidDriver extends DeviceDriverBase {
-  constructor(client) {
+  constructor(client, port) {
     super(client);
     this.expect = require('../android/expect');
     this.invocationManager = new InvocationManager(client);
@@ -21,6 +21,7 @@ class AndroidDriver extends DeviceDriverBase {
     this.adb = new ADB();
     this.aapt = new AAPT();
     this.apkPath = new APKPath();
+    this.port = port;
   }
 
   exportGlobals() {
@@ -61,6 +62,9 @@ class AndroidDriver extends DeviceDriverBase {
   }
 
   async launch(deviceId, bundleId, launchArgs) {
+    log.verbose(`Call adb reverse for port ${this.port}`);
+    await this.adb.reverse(deviceId, this.port);
+    
     const args = [];
     _.forEach(launchArgs, (value, key) => {
       args.push(`${key} ${value}`);
